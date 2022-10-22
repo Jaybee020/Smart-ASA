@@ -1,0 +1,1187 @@
+#pragma version 7
+txn NumAppArgs
+int 0
+==
+bnz main_l16
+txna ApplicationArgs 0
+method "asset_create(uint64,uint32,bool,string,string,string,byte[],address,address,address,address)uint64"
+==
+bnz main_l15
+txna ApplicationArgs 0
+method "get_asset_config(asset)(uint64,uint32,bool,string,string,string,byte[],address,address,address,address)"
+==
+bnz main_l14
+txna ApplicationArgs 0
+method "asset_optin(asset,axfer)void"
+==
+bnz main_l13
+txna ApplicationArgs 0
+method "asset_transfer(asset,uint64,account,account)void"
+==
+bnz main_l12
+txna ApplicationArgs 0
+method "asset_delegate(asset,uint64,account)void"
+==
+bnz main_l11
+txna ApplicationArgs 0
+method "get_delegate_allowance(asset,account,account)uint64"
+==
+bnz main_l10
+txna ApplicationArgs 0
+method "delegate_asset_transfer(asset,uint64,account,account)void"
+==
+bnz main_l9
+err
+main_l9:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+store 56
+txna ApplicationArgs 2
+btoi
+store 57
+txna ApplicationArgs 3
+int 0
+getbyte
+store 58
+txna ApplicationArgs 4
+int 0
+getbyte
+store 59
+load 56
+load 57
+load 58
+load 59
+callsub delegateassettransfer_8
+int 1
+return
+main_l10:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+store 49
+txna ApplicationArgs 2
+int 0
+getbyte
+store 50
+txna ApplicationArgs 3
+int 0
+getbyte
+store 51
+load 49
+load 50
+load 51
+callsub getdelegateallowance_7
+store 52
+byte 0x151f7c75
+load 52
+itob
+concat
+log
+int 1
+return
+main_l11:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+store 46
+txna ApplicationArgs 2
+btoi
+store 47
+txna ApplicationArgs 3
+int 0
+getbyte
+store 48
+load 46
+load 47
+load 48
+callsub assetdelegate_6
+int 1
+return
+main_l12:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+store 42
+txna ApplicationArgs 2
+btoi
+store 43
+txna ApplicationArgs 3
+int 0
+getbyte
+store 44
+txna ApplicationArgs 4
+int 0
+getbyte
+store 45
+load 42
+load 43
+load 44
+load 45
+callsub assettransfer_4
+int 1
+return
+main_l13:
+txn OnCompletion
+int OptIn
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+store 40
+txn GroupIndex
+int 1
+-
+store 41
+load 41
+gtxns TypeEnum
+int axfer
+==
+assert
+load 40
+load 41
+callsub assetoptin_5
+int 1
+return
+main_l14:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+int 0
+getbyte
+callsub getassetconfig_3
+store 23
+byte 0x151f7c75
+load 23
+concat
+log
+int 1
+return
+main_l15:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+txna ApplicationArgs 1
+btoi
+store 0
+txna ApplicationArgs 2
+int 0
+extract_uint32
+store 1
+txna ApplicationArgs 3
+int 0
+int 8
+*
+getbit
+store 2
+txna ApplicationArgs 4
+store 3
+txna ApplicationArgs 5
+store 4
+txna ApplicationArgs 6
+store 5
+txna ApplicationArgs 7
+store 6
+txna ApplicationArgs 8
+store 7
+txna ApplicationArgs 9
+store 8
+txna ApplicationArgs 10
+store 9
+txna ApplicationArgs 11
+store 10
+load 0
+load 1
+load 2
+load 3
+load 4
+load 5
+load 6
+load 7
+load 8
+load 9
+load 10
+callsub assetcreate_2
+store 11
+byte 0x151f7c75
+load 11
+itob
+concat
+log
+int 1
+return
+main_l16:
+txn OnCompletion
+int NoOp
+==
+bnz main_l26
+txn OnCompletion
+int OptIn
+==
+bnz main_l25
+txn OnCompletion
+int CloseOut
+==
+bnz main_l24
+txn OnCompletion
+int UpdateApplication
+==
+bnz main_l23
+txn OnCompletion
+int DeleteApplication
+==
+bnz main_l22
+err
+main_l22:
+txn ApplicationID
+int 0
+!=
+assert
+int 0
+return
+main_l23:
+txn ApplicationID
+int 0
+!=
+assert
+int 0
+return
+main_l24:
+txn ApplicationID
+int 0
+!=
+assert
+int 0
+return
+main_l25:
+txn ApplicationID
+int 0
+!=
+assert
+int 0
+return
+main_l26:
+txn ApplicationID
+int 0
+==
+assert
+byte "creator"
+txn Sender
+app_global_put
+byte "smart_asa_id"
+int 0
+app_global_put
+byte "royalty_amount"
+int 2
+app_global_put
+byte "frozen"
+int 0
+app_global_put
+int 0
+int 0
+int 0
+byte ""
+byte ""
+byte ""
+byte ""
+global ZeroAddress
+global ZeroAddress
+global ZeroAddress
+global ZeroAddress
+callsub setglobalvars_1
+int 1
+return
+
+// calculate_circulating_supply
+calculatecirculatingsupply_0:
+store 75
+global CurrentApplicationAddress
+load 75
+asset_holding_get AssetBalance
+store 77
+store 76
+int 18446744073709551615
+load 76
+-
+retsub
+
+// set_global_vars
+setglobalvars_1:
+store 70
+store 69
+store 68
+store 67
+store 66
+store 65
+store 64
+store 63
+store 62
+store 61
+store 60
+byte "total"
+load 60
+app_global_put
+byte "decimals"
+load 61
+app_global_put
+byte "default_frozen"
+load 62
+app_global_put
+byte "unit_name"
+load 63
+app_global_put
+byte "name"
+load 64
+app_global_put
+byte "url"
+load 65
+app_global_put
+byte "metadata_hash"
+load 66
+app_global_put
+byte "manager_addr"
+load 67
+app_global_put
+byte "reserve_addr"
+load 68
+app_global_put
+byte "freeze_addr"
+load 69
+app_global_put
+byte "clawback_addr"
+load 70
+app_global_put
+retsub
+
+// asset_create
+assetcreate_2:
+store 22
+store 21
+store 20
+store 19
+store 18
+store 17
+store 16
+store 15
+store 14
+store 13
+store 12
+txn Sender
+byte "creator"
+app_global_get
+==
+byte "smart_asa_id"
+app_global_get
+!
+&&
+load 19
+len
+int 32
+==
+&&
+load 21
+len
+int 32
+==
+&&
+load 20
+len
+int 32
+==
+&&
+load 22
+len
+int 32
+==
+&&
+assert
+itxn_begin
+int acfg
+itxn_field TypeEnum
+int 18446744073709551615
+itxn_field ConfigAssetTotal
+int 0
+itxn_field ConfigAssetDecimals
+int 1
+itxn_field ConfigAssetDefaultFrozen
+byte "SMART-ASA"
+itxn_field ConfigAssetName
+byte "S-ASA"
+itxn_field ConfigAssetUnitName
+load 17
+extract 2 0
+itxn_field ConfigAssetURL
+global CurrentApplicationID
+itob
+sha256
+itxn_field ConfigAssetMetadataHash
+global CurrentApplicationAddress
+itxn_field ConfigAssetManager
+global CurrentApplicationAddress
+itxn_field ConfigAssetReserve
+global CurrentApplicationAddress
+itxn_field ConfigAssetFreeze
+global CurrentApplicationAddress
+itxn_field ConfigAssetClawback
+int 0
+itxn_field Fee
+itxn_submit
+byte "smart_asa_id"
+itxn CreatedAssetID
+app_global_put
+load 12
+load 13
+load 14
+load 15
+extract 2 0
+load 16
+extract 2 0
+load 17
+extract 2 0
+load 18
+load 19
+load 20
+load 21
+load 22
+callsub setglobalvars_1
+itxn CreatedAssetID
+retsub
+
+// get_asset_config
+getassetconfig_3:
+txnas Assets
+byte "smart_asa_id"
+app_global_get
+==
+assert
+byte "total"
+app_global_get
+store 24
+byte "decimals"
+app_global_get
+store 25
+load 25
+int 4294967296
+<
+assert
+byte "default_frozen"
+app_global_get
+!
+!
+store 26
+byte "unit_name"
+app_global_get
+store 27
+load 27
+len
+itob
+extract 6 0
+load 27
+concat
+store 27
+byte "name"
+app_global_get
+store 28
+load 28
+len
+itob
+extract 6 0
+load 28
+concat
+store 28
+byte "url"
+app_global_get
+store 29
+load 29
+len
+itob
+extract 6 0
+load 29
+concat
+store 29
+byte "metadata_hash"
+app_global_get
+store 30
+load 30
+len
+itob
+extract 6 0
+load 30
+concat
+store 30
+load 30
+store 31
+byte "manager_addr"
+app_global_get
+store 32
+load 32
+len
+int 32
+==
+assert
+byte "reserve_addr"
+app_global_get
+store 33
+load 33
+len
+int 32
+==
+assert
+byte "freeze_addr"
+app_global_get
+store 34
+load 34
+len
+int 32
+==
+assert
+byte "clawback_addr"
+app_global_get
+store 35
+load 35
+len
+int 32
+==
+assert
+load 24
+itob
+load 25
+itob
+extract 4 0
+concat
+byte 0x00
+int 0
+load 26
+setbit
+concat
+load 27
+store 39
+load 39
+store 38
+int 149
+store 36
+load 36
+load 39
+len
++
+store 37
+load 37
+int 65536
+<
+assert
+load 36
+itob
+extract 6 0
+concat
+load 28
+store 39
+load 38
+load 39
+concat
+store 38
+load 37
+store 36
+load 36
+load 39
+len
++
+store 37
+load 37
+int 65536
+<
+assert
+load 36
+itob
+extract 6 0
+concat
+load 29
+store 39
+load 38
+load 39
+concat
+store 38
+load 37
+store 36
+load 36
+load 39
+len
++
+store 37
+load 37
+int 65536
+<
+assert
+load 36
+itob
+extract 6 0
+concat
+load 31
+store 39
+load 38
+load 39
+concat
+store 38
+load 37
+store 36
+load 36
+itob
+extract 6 0
+concat
+load 32
+concat
+load 33
+concat
+load 34
+concat
+load 35
+concat
+load 38
+concat
+retsub
+
+// asset_transfer
+assettransfer_4:
+store 74
+store 73
+store 72
+store 71
+byte "smart_asa_id"
+app_global_get
+load 71
+txnas Assets
+byte "smart_asa_id"
+app_global_get
+==
+&&
+load 73
+txnas Accounts
+len
+int 32
+==
+&&
+load 74
+txnas Accounts
+len
+int 32
+==
+&&
+load 72
+byte "royalty_amount"
+app_global_get
+>
+&&
+assert
+txn Sender
+load 73
+txnas Accounts
+==
+txn Sender
+byte "clawback_addr"
+app_global_get
+==
+!
+&&
+bnz assettransfer_4_l6
+txn Sender
+byte "reserve_addr"
+app_global_get
+==
+load 73
+txnas Accounts
+global CurrentApplicationAddress
+==
+&&
+bnz assettransfer_4_l5
+txn Sender
+load 73
+txnas Accounts
+==
+load 73
+txnas Accounts
+byte "reserve_addr"
+app_global_get
+==
+&&
+load 74
+txnas Accounts
+global CurrentApplicationAddress
+==
+&&
+bnz assettransfer_4_l4
+txn Sender
+byte "clawback_addr"
+app_global_get
+==
+byte "smart_asa_id"
+app_global_get
+load 73
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+byte "smart_asa_id"
+app_global_get
+load 74
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+&&
+assert
+b assettransfer_4_l7
+assettransfer_4_l4:
+byte "frozen"
+app_global_get
+!
+load 73
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+&&
+byte "smart_asa_id"
+app_global_get
+load 73
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+assert
+b assettransfer_4_l7
+assettransfer_4_l5:
+byte "frozen"
+app_global_get
+!
+load 74
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+&&
+byte "smart_asa_id"
+app_global_get
+load 74
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+load 71
+txnas Assets
+callsub calculatecirculatingsupply_0
+load 72
++
+byte "total"
+app_global_get
+<=
+&&
+assert
+b assettransfer_4_l7
+assettransfer_4_l6:
+load 73
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+load 74
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+&&
+byte "frozen"
+app_global_get
+!
+&&
+byte "smart_asa_id"
+app_global_get
+load 73
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+byte "smart_asa_id"
+app_global_get
+load 74
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+&&
+assert
+assettransfer_4_l7:
+itxn_begin
+int axfer
+itxn_field TypeEnum
+byte "smart_asa_id"
+app_global_get
+itxn_field XferAsset
+load 72
+byte "royalty_amount"
+app_global_get
+-
+itxn_field AssetAmount
+load 73
+txnas Accounts
+itxn_field AssetSender
+load 74
+txnas Accounts
+itxn_field AssetReceiver
+int 0
+itxn_field Fee
+itxn_next
+int axfer
+itxn_field TypeEnum
+byte "smart_asa_id"
+app_global_get
+itxn_field XferAsset
+byte "royalty_amount"
+app_global_get
+itxn_field AssetAmount
+load 73
+txnas Accounts
+itxn_field AssetSender
+byte "creator"
+app_global_get
+itxn_field AssetReceiver
+int 0
+itxn_field Fee
+itxn_submit
+retsub
+
+// asset_optin
+assetoptin_5:
+store 79
+store 78
+txn Sender
+load 78
+txnas Assets
+asset_holding_get AssetBalance
+store 81
+store 80
+byte "smart_asa_id"
+app_global_get
+load 78
+txnas Assets
+byte "smart_asa_id"
+app_global_get
+==
+&&
+load 81
+&&
+load 79
+gtxns TypeEnum
+int axfer
+==
+&&
+load 79
+gtxns AssetAmount
+int 0
+==
+&&
+load 79
+gtxns XferAsset
+byte "smart_asa_id"
+app_global_get
+==
+&&
+load 79
+gtxns Sender
+txn Sender
+==
+&&
+load 79
+gtxns AssetReceiver
+txn Sender
+==
+&&
+load 79
+gtxns AssetCloseTo
+global ZeroAddress
+==
+&&
+assert
+txn Sender
+byte "smart_asa_id"
+byte "smart_asa_id"
+app_global_get
+app_local_put
+txn Sender
+byte "frozen"
+int 0
+app_local_put
+load 80
+int 0
+>
+byte "default_frozen"
+app_global_get
+||
+bz assetoptin_5_l2
+txn Sender
+byte "frozen"
+int 1
+app_local_put
+assetoptin_5_l2:
+int 1
+return
+
+// asset_delegate
+assetdelegate_6:
+store 84
+store 83
+store 82
+byte "smart_asa_id"
+app_global_get
+load 84
+txnas Accounts
+txn Sender
+!=
+&&
+byte "default_frozen"
+app_global_get
+!
+&&
+byte "smart_asa_id"
+app_global_get
+load 82
+txnas Assets
+==
+&&
+byte "smart_asa_id"
+app_global_get
+txn Sender
+byte "smart_asa_id"
+app_local_get
+==
+&&
+txn Sender
+byte "frozen"
+app_local_get
+!
+&&
+byte "smart_asa_id"
+app_global_get
+load 84
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+load 84
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+&&
+assert
+txn Sender
+load 82
+txnas Assets
+asset_holding_get AssetBalance
+store 86
+store 85
+load 86
+load 83
+load 85
+<=
+&&
+assert
+txn Sender
+load 84
+txnas Accounts
+load 83
+app_local_put
+int 1
+return
+
+// get_delegate_allowance
+getdelegateallowance_7:
+store 55
+store 54
+store 53
+byte "smart_asa_id"
+app_global_get
+load 53
+txnas Assets
+byte "smart_asa_id"
+app_global_get
+==
+&&
+byte "smart_asa_id"
+app_global_get
+load 54
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+byte "smart_asa_id"
+app_global_get
+load 55
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+assert
+load 54
+txnas Accounts
+load 55
+txnas Accounts
+app_local_get
+retsub
+
+// delegate_asset_transfer
+delegateassettransfer_8:
+store 90
+store 89
+store 88
+store 87
+byte "smart_asa_id"
+app_global_get
+byte "default_frozen"
+app_global_get
+!
+&&
+load 87
+txnas Assets
+byte "smart_asa_id"
+app_global_get
+==
+&&
+byte "smart_asa_id"
+app_global_get
+load 89
+txnas Accounts
+byte "smart_asa_id"
+app_local_get
+==
+&&
+load 89
+txnas Accounts
+byte "frozen"
+app_local_get
+!
+&&
+txn Sender
+byte "smart_asa_id"
+app_local_get
+&&
+txn Sender
+byte "frozen"
+app_local_get
+!
+&&
+load 88
+load 89
+txnas Accounts
+txn Sender
+app_local_get
+<=
+&&
+load 88
+byte "royalty_amount"
+app_global_get
+>
+&&
+assert
+itxn_begin
+int axfer
+itxn_field TypeEnum
+byte "smart_asa_id"
+app_global_get
+itxn_field XferAsset
+load 88
+byte "royalty_amount"
+app_global_get
+-
+itxn_field AssetAmount
+load 89
+txnas Accounts
+itxn_field AssetSender
+load 90
+txnas Accounts
+itxn_field AssetReceiver
+int 0
+itxn_field Fee
+itxn_next
+int axfer
+itxn_field TypeEnum
+byte "smart_asa_id"
+app_global_get
+itxn_field XferAsset
+byte "royalty_amount"
+app_global_get
+itxn_field AssetAmount
+load 89
+txnas Accounts
+itxn_field AssetSender
+byte "creator"
+app_global_get
+itxn_field AssetReceiver
+int 0
+itxn_field Fee
+itxn_submit
+load 89
+txnas Accounts
+txn Sender
+load 89
+txnas Accounts
+txn Sender
+app_local_get
+load 88
+-
+app_local_put
+int 1
+return

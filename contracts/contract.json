@@ -1,0 +1,174 @@
+{
+    "name": "Smart ASA",
+    "methods": [
+        {
+            "name": "asset_create",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "total"
+                },
+                {
+                    "type": "uint32",
+                    "name": "decimals"
+                },
+                {
+                    "type": "bool",
+                    "name": "default_frozen"
+                },
+                {
+                    "type": "string",
+                    "name": "unit_name"
+                },
+                {
+                    "type": "string",
+                    "name": "name"
+                },
+                {
+                    "type": "string",
+                    "name": "url"
+                },
+                {
+                    "type": "byte[]",
+                    "name": "metadata_hash"
+                },
+                {
+                    "type": "address",
+                    "name": "manager_addr"
+                },
+                {
+                    "type": "address",
+                    "name": "reserve_addr"
+                },
+                {
+                    "type": "address",
+                    "name": "freeze_addr"
+                },
+                {
+                    "type": "address",
+                    "name": "clawback_addr"
+                }
+            ],
+            "returns": {
+                "type": "uint64"
+            }
+        },
+        {
+            "name": "get_asset_config",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "asset"
+                }
+            ],
+            "returns": {
+                "type": "(uint64,uint32,bool,string,string,string,byte[],address,address,address,address)"
+            }
+        },
+        {
+            "name": "asset_optin",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "optin_asset"
+                },
+                {
+                    "type": "axfer",
+                    "name": "optin_txn"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "asset_transfer",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "xfer_asset"
+                },
+                {
+                    "type": "uint64",
+                    "name": "asset_amount"
+                },
+                {
+                    "type": "account",
+                    "name": "asset_sender"
+                },
+                {
+                    "type": "account",
+                    "name": "asset_receiver"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "asset_delegate",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "delegate_asset"
+                },
+                {
+                    "type": "uint64",
+                    "name": "amount"
+                },
+                {
+                    "type": "account",
+                    "name": "spender"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "get_delegate_allowance",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "delegate_asset"
+                },
+                {
+                    "type": "account",
+                    "name": "owner"
+                },
+                {
+                    "type": "account",
+                    "name": "spender"
+                }
+            ],
+            "returns": {
+                "type": "uint64"
+            }
+        },
+        {
+            "name": "delegate_asset_transfer",
+            "args": [
+                {
+                    "type": "asset",
+                    "name": "xfer_asset"
+                },
+                {
+                    "type": "uint64",
+                    "name": "asset_amount"
+                },
+                {
+                    "type": "account",
+                    "name": "asset_owner"
+                },
+                {
+                    "type": "account",
+                    "name": "asset_receiver"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        }
+    ],
+    "networks": {}
+}
