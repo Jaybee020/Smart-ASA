@@ -23,7 +23,7 @@ async function main() {
   let localInts = 16;
   let localBytes = 0;
   let globalInts = 6;
-  let globalBytes = 9;
+  let globalBytes = 8;
   // get transaction params
   const params = await algodClient.getTransactionParams().do();
 

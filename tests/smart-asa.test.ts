@@ -8,7 +8,13 @@ import algosdk, {
   Transaction,
   Account,
 } from "algosdk";
-import { appAddr, appId, assetId, user } from "../scripts/config";
+import {
+  appAddr,
+  appId,
+  assetId,
+  getAppCreator,
+  user,
+} from "../scripts/config";
 
 import {
   algodClient,
@@ -49,13 +55,14 @@ describe("Smart-ASA", () => {
   test("It should return the Smart ASA parameters", async () => {
     const returnVal = await call(user, appId, "get_asset_config", [assetId]);
     //@ts-ignore
-    expect(returnVal.length).toBe(11);
+    expect(returnVal.length).toBe(12);
   });
   test("It should transfer asset and pay royalty to creator", async () => {
     const addr1 = generateAccount();
     await sendAlgo(user, addr1.addr, 20000000);
+    const creatorAddr: string = await getAppCreator(appId);
     const initialBalanceofcreator = await checkAssetBalOfAddr(
-      user.addr,
+      creatorAddr,
       assetId
     );
     await optInToAssetandContract(addr1);
@@ -69,12 +76,13 @@ describe("Smart-ASA", () => {
       amount,
       appAddr,
       addr1.addr,
+      creatorAddr,
     ]);
     const finalBallanceofaddr1 = await checkAssetBalOfAddr(addr1.addr, assetId);
     const finalBalanceofcreator = await checkAssetBalOfAddr(user.addr, assetId);
     expect(finalBallanceofaddr1).toBe(amountSent);
     console.log(finalBalanceofcreator);
-    expect(finalBalanceofcreator - initialBalanceofcreator).toBe(royaltyAmount);
+    expect(finalBalanceofcreator - initialBalanceofcreator).toBe(2);
   });
 
   test("It should delegate account", async () => {
@@ -84,6 +92,7 @@ describe("Smart-ASA", () => {
     await sendAlgo(user, addr2.addr, 20000000);
     await optInToAssetandContract(addr1);
     await optInToAssetandContract(addr2);
+    const creatorAddr: string = await getAppCreator(appId);
 
     const amount = 30;
     //credit the first user with asset
@@ -92,6 +101,7 @@ describe("Smart-ASA", () => {
       amount,
       appAddr,
       addr1.addr,
+      creatorAddr,
     ]);
 
     //delegate second user
@@ -121,12 +131,14 @@ describe("Smart-ASA", () => {
     await optInToAssetandContract(addr2);
     await optInToAssetandContract(addr3);
     const amount = 30;
+    const creatorAddr: string = await getAppCreator(appId);
     //credit the first user with asset
     await call(user, appId, "asset_transfer", [
       assetId,
       amount,
       appAddr,
       addr1.addr,
+      creatorAddr,
     ]);
 
     //delegate second user
@@ -142,6 +154,7 @@ describe("Smart-ASA", () => {
       delegatetransferAmount,
       addr1.addr,
       addr3.addr,
+      creatorAddr,
     ]);
     const balance = await call(user, appId, "get_delegate_allowance", [
       assetId,

@@ -1,10 +1,9 @@
 from pyteal import *
 import json
-is_creator = Txn.sender() == App.globalGet(Bytes("creator"))
+is_creator = Txn.sender() == Global.creator_address()
 is_manager = Txn.sender() == App.globalGet(Bytes("manager_addr"))
 smart_asa_id = App.globalGet(Bytes("smart_asa_id"))
-creator = App.globalGet(Bytes("creator"))
-royalty_amount = App.globalGet(Bytes("royalty_amount"))
+current_royalty_amount = App.globalGet(Bytes("royalty_amount"))
 current_clawback_addr = App.globalGet(Bytes("clawback_addr"))
 current_reserve_addr = App.globalGet(Bytes("reserve_addr"))
 current_freeze_addr = App.globalGet(Bytes("freeze_addr"))
@@ -15,6 +14,7 @@ class Smart_ASA_Config(abi.NamedTuple):
     total: abi.Field[abi.Uint64]
     decimals: abi.Field[abi.Uint32]
     default_frozen: abi.Field[abi.Bool]
+    royalty_amount: abi.Field[abi.Uint64]
     unit_name: abi.Field[abi.String]
     name: abi.Field[abi.String]
     url: abi.Field[abi.String]
@@ -130,6 +130,7 @@ def get_asset_config(asset: abi.Asset, *, output: Smart_ASA_Config):
     total = abi.make(abi.Uint64)
     decimals = abi.make(abi.Uint32)
     default_frozen = abi.make(abi.Bool)
+    royalty_amount = abi.make(abi.Uint64)
     unit_name = abi.make(abi.String)
     name = abi.make(abi.String)
     url = abi.make(abi.String)
@@ -147,6 +148,7 @@ def get_asset_config(asset: abi.Asset, *, output: Smart_ASA_Config):
         total.set(App.globalGet(Bytes("total"))),
         decimals.set(App.globalGet(Bytes("decimals"))),
         default_frozen.set(App.globalGet(Bytes("default_frozen"))),
+        royalty_amount.set(current_royalty_amount),
         unit_name.set(App.globalGet(Bytes("unit_name"))),
         name.set(App.globalGet(Bytes("name"))),
         url.set(App.globalGet(Bytes("url"))),
@@ -156,13 +158,13 @@ def get_asset_config(asset: abi.Asset, *, output: Smart_ASA_Config):
         reserve_addr.set(current_reserve_addr),
         freeze_addr.set(current_freeze_addr),
         clawback_addr.set(current_clawback_addr),
-        output.set(total, decimals, default_frozen, unit_name, name, url,
+        output.set(total, decimals, default_frozen, royalty_amount, unit_name, name, url,
                    metadata_hash, manager_addr, reserve_addr, freeze_addr, clawback_addr),
     )
 
 
 @ABIReturnSubroutine
-def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender: abi.Account, asset_receiver: abi.Account):
+def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender: abi.Account, asset_receiver: abi.Account, royalty_receiver: abi.Account):
     is_sender = Txn.sender() == asset_sender.address()
     asset_frozen = App.globalGet(Bytes("frozen"))
     is_smartASA_id = xfer_asset.asset_id() == smart_asa_id
@@ -193,7 +195,7 @@ def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender
                 is_smartASA_id,
                 Len(asset_sender.address()) == Int(32),
                 Len(asset_receiver.address()) == Int(32),
-                asset_amount.get() > royalty_amount
+                asset_amount.get() > current_royalty_amount
             )
         ),
         # if it is a normal transaction and not clawback addr
@@ -236,7 +238,7 @@ def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender
             {
                 TxnField.type_enum: TxnType.AssetTransfer,
                 TxnField.xfer_asset: smart_asa_id,
-                TxnField.asset_amount: asset_amount.get()-royalty_amount,
+                TxnField.asset_amount: asset_amount.get()-current_royalty_amount,
                 TxnField.asset_sender: asset_sender.address(),
                 TxnField.asset_receiver: asset_receiver.address(),
                 TxnField.fee: Int(0),
@@ -247,9 +249,9 @@ def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender
             {
                 TxnField.type_enum: TxnType.AssetTransfer,
                 TxnField.xfer_asset: smart_asa_id,
-                TxnField.asset_amount: royalty_amount,
+                TxnField.asset_amount: current_royalty_amount,
                 TxnField.asset_sender: asset_sender.address(),
-                TxnField.asset_receiver: creator,
+                TxnField.asset_receiver: royalty_receiver.address(),
                 TxnField.fee: Int(0),
             }
         ),
@@ -506,7 +508,7 @@ def get_delegate_allowance(delegate_asset: abi.Asset, owner: abi.Account, spende
 
 
 @ABIReturnSubroutine
-def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_owner: abi.Account, asset_receiver: abi.Account):
+def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_owner: abi.Account, asset_receiver: abi.Account, royalty_receiver: abi.Account):
     asset_frozen = App.globalGet(Bytes("default_frozen"))
     is_smartASA_id = xfer_asset.asset_id() == smart_asa_id
     owner_optedIn = smart_asa_id == App.localGet(
@@ -526,15 +528,17 @@ def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, ass
                 spender_optedIn,
                 Not(spender_frozen),
                 asset_amount.get() <= spender_allowance,
-                asset_amount.get() > royalty_amount
+                asset_amount.get() > current_royalty_amount
             )
         ),
+        App.localPut(asset_owner.address(), Txn.sender(),
+                     spender_allowance-asset_amount.get()),
         InnerTxnBuilder.Begin(),
         InnerTxnBuilder.SetFields(
             {
                 TxnField.type_enum: TxnType.AssetTransfer,
                 TxnField.xfer_asset: smart_asa_id,
-                TxnField.asset_amount: asset_amount.get()-royalty_amount,
+                TxnField.asset_amount: asset_amount.get()-current_royalty_amount,
                 TxnField.asset_sender: asset_owner.address(),
                 TxnField.asset_receiver: asset_receiver.address(),
                 TxnField.fee: Int(0),
@@ -545,23 +549,19 @@ def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, ass
             {
                 TxnField.type_enum: TxnType.AssetTransfer,
                 TxnField.xfer_asset: smart_asa_id,
-                TxnField.asset_amount: royalty_amount,
+                TxnField.asset_amount: current_royalty_amount,
                 TxnField.asset_sender: asset_owner.address(),
-                TxnField.asset_receiver: creator,
+                TxnField.asset_receiver: royalty_receiver.address(),
                 TxnField.fee: Int(0),
             }
         ),
         InnerTxnBuilder.Submit(),
-        App.localPut(asset_owner.address(), Txn.sender(),
-                     spender_allowance-asset_amount.get()),
-        Approve()
 
     )
 
 
 # store the deployer of the contract in global storage and initialize global vars
 handle_Creation = Seq(
-    App.globalPut(Bytes("creator"), Txn.sender()),
     App.globalPut(Bytes("smart_asa_id"), Int(0)),
     App.globalPut(Bytes("royalty_amount"), Int(2)),
     App.globalPut(Bytes("frozen"), Int(0)),

@@ -62,7 +62,7 @@
                 }
             ],
             "returns": {
-                "type": "(uint64,uint32,bool,string,string,string,byte[],address,address,address,address)"
+                "type": "(uint64,uint32,bool,uint64,string,string,string,byte[],address,address,address,address)"
             }
         },
         {
@@ -99,6 +99,10 @@
                 {
                     "type": "account",
                     "name": "asset_receiver"
+                },
+                {
+                    "type": "account",
+                    "name": "royalty_receiver"
                 }
             ],
             "returns": {
@@ -163,6 +167,10 @@
                 {
                     "type": "account",
                     "name": "asset_receiver"
+                },
+                {
+                    "type": "account",
+                    "name": "royalty_receiver"
                 }
             ],
             "returns": {

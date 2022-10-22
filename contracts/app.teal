@@ -8,7 +8,7 @@ method "asset_create(uint64,uint32,bool,string,string,string,byte[],address,addr
 ==
 bnz main_l15
 txna ApplicationArgs 0
-method "get_asset_config(asset)(uint64,uint32,bool,string,string,string,byte[],address,address,address,address)"
+method "get_asset_config(asset)(uint64,uint32,bool,uint64,string,string,string,byte[],address,address,address,address)"
 ==
 bnz main_l14
 txna ApplicationArgs 0
@@ -16,7 +16,7 @@ method "asset_optin(asset,axfer)void"
 ==
 bnz main_l13
 txna ApplicationArgs 0
-method "asset_transfer(asset,uint64,account,account)void"
+method "asset_transfer(asset,uint64,account,account,account)void"
 ==
 bnz main_l12
 txna ApplicationArgs 0
@@ -28,7 +28,7 @@ method "get_delegate_allowance(asset,account,account)uint64"
 ==
 bnz main_l10
 txna ApplicationArgs 0
-method "delegate_asset_transfer(asset,uint64,account,account)void"
+method "delegate_asset_transfer(asset,uint64,account,account,account)void"
 ==
 bnz main_l9
 err
@@ -44,22 +44,27 @@ assert
 txna ApplicationArgs 1
 int 0
 getbyte
-store 56
+store 58
 txna ApplicationArgs 2
 btoi
-store 57
+store 59
 txna ApplicationArgs 3
 int 0
 getbyte
-store 58
+store 60
 txna ApplicationArgs 4
 int 0
 getbyte
-store 59
-load 56
-load 57
+store 61
+txna ApplicationArgs 5
+int 0
+getbyte
+store 62
 load 58
 load 59
+load 60
+load 61
+load 62
 callsub delegateassettransfer_8
 int 1
 return
@@ -75,22 +80,22 @@ assert
 txna ApplicationArgs 1
 int 0
 getbyte
-store 49
+store 51
 txna ApplicationArgs 2
 int 0
 getbyte
-store 50
+store 52
 txna ApplicationArgs 3
 int 0
 getbyte
-store 51
-load 49
-load 50
+store 53
 load 51
-callsub getdelegateallowance_7
-store 52
-byte 0x151f7c75
 load 52
+load 53
+callsub getdelegateallowance_7
+store 54
+byte 0x151f7c75
+load 54
 itob
 concat
 log
@@ -108,17 +113,17 @@ assert
 txna ApplicationArgs 1
 int 0
 getbyte
-store 46
+store 48
 txna ApplicationArgs 2
 btoi
-store 47
+store 49
 txna ApplicationArgs 3
 int 0
 getbyte
-store 48
-load 46
-load 47
+store 50
 load 48
+load 49
+load 50
 callsub assetdelegate_6
 int 1
 return
@@ -134,22 +139,27 @@ assert
 txna ApplicationArgs 1
 int 0
 getbyte
-store 42
+store 43
 txna ApplicationArgs 2
 btoi
-store 43
+store 44
 txna ApplicationArgs 3
 int 0
 getbyte
-store 44
+store 45
 txna ApplicationArgs 4
 int 0
 getbyte
-store 45
-load 42
+store 46
+txna ApplicationArgs 5
+int 0
+getbyte
+store 47
 load 43
 load 44
 load 45
+load 46
+load 47
 callsub assettransfer_4
 int 1
 return
@@ -165,18 +175,18 @@ assert
 txna ApplicationArgs 1
 int 0
 getbyte
-store 40
+store 41
 txn GroupIndex
 int 1
 -
-store 41
-load 41
+store 42
+load 42
 gtxns TypeEnum
 int axfer
 ==
 assert
-load 40
 load 41
+load 42
 callsub assetoptin_5
 int 1
 return
@@ -313,9 +323,6 @@ txn ApplicationID
 int 0
 ==
 assert
-byte "creator"
-txn Sender
-app_global_put
 byte "smart_asa_id"
 int 0
 app_global_put
@@ -342,19 +349,22 @@ return
 
 // calculate_circulating_supply
 calculatecirculatingsupply_0:
-store 75
+store 79
 global CurrentApplicationAddress
-load 75
+load 79
 asset_holding_get AssetBalance
-store 77
-store 76
+store 81
+store 80
 int 18446744073709551615
-load 76
+load 80
 -
 retsub
 
 // set_global_vars
 setglobalvars_1:
+store 73
+store 72
+store 71
 store 70
 store 69
 store 68
@@ -363,41 +373,38 @@ store 66
 store 65
 store 64
 store 63
-store 62
-store 61
-store 60
 byte "total"
-load 60
-app_global_put
-byte "decimals"
-load 61
-app_global_put
-byte "default_frozen"
-load 62
-app_global_put
-byte "unit_name"
 load 63
 app_global_put
-byte "name"
+byte "decimals"
 load 64
 app_global_put
-byte "url"
+byte "default_frozen"
 load 65
 app_global_put
-byte "metadata_hash"
+byte "unit_name"
 load 66
 app_global_put
-byte "manager_addr"
+byte "name"
 load 67
 app_global_put
-byte "reserve_addr"
+byte "url"
 load 68
 app_global_put
-byte "freeze_addr"
+byte "metadata_hash"
 load 69
 app_global_put
-byte "clawback_addr"
+byte "manager_addr"
 load 70
+app_global_put
+byte "reserve_addr"
+load 71
+app_global_put
+byte "freeze_addr"
+load 72
+app_global_put
+byte "clawback_addr"
+load 73
 app_global_put
 retsub
 
@@ -415,8 +422,7 @@ store 14
 store 13
 store 12
 txn Sender
-byte "creator"
-app_global_get
+global CreatorAddress
 ==
 byte "smart_asa_id"
 app_global_get
@@ -517,57 +523,52 @@ app_global_get
 !
 !
 store 26
+byte "royalty_amount"
+app_global_get
+store 27
 byte "unit_name"
 app_global_get
-store 27
-load 27
+store 28
+load 28
 len
 itob
 extract 6 0
-load 27
+load 28
 concat
-store 27
+store 28
 byte "name"
 app_global_get
-store 28
-load 28
+store 29
+load 29
 len
 itob
 extract 6 0
-load 28
+load 29
 concat
-store 28
+store 29
 byte "url"
 app_global_get
-store 29
-load 29
+store 30
+load 30
 len
 itob
 extract 6 0
-load 29
+load 30
 concat
-store 29
+store 30
 byte "metadata_hash"
 app_global_get
-store 30
-load 30
+store 31
+load 31
 len
 itob
 extract 6 0
-load 30
+load 31
 concat
-store 30
-load 30
 store 31
-byte "manager_addr"
-app_global_get
+load 31
 store 32
-load 32
-len
-int 32
-==
-assert
-byte "reserve_addr"
+byte "manager_addr"
 app_global_get
 store 33
 load 33
@@ -575,7 +576,7 @@ len
 int 32
 ==
 assert
-byte "freeze_addr"
+byte "reserve_addr"
 app_global_get
 store 34
 load 34
@@ -583,10 +584,18 @@ len
 int 32
 ==
 assert
-byte "clawback_addr"
+byte "freeze_addr"
 app_global_get
 store 35
 load 35
+len
+int 32
+==
+assert
+byte "clawback_addr"
+app_global_get
+store 36
+load 36
 len
 int 32
 ==
@@ -603,79 +612,80 @@ load 26
 setbit
 concat
 load 27
-store 39
-load 39
-store 38
-int 149
-store 36
-load 36
-load 39
-len
-+
-store 37
-load 37
-int 65536
-<
-assert
-load 36
 itob
-extract 6 0
 concat
 load 28
+store 40
+load 40
 store 39
-load 38
-load 39
-concat
-store 38
-load 37
-store 36
-load 36
-load 39
-len
-+
+int 157
 store 37
 load 37
+load 40
+len
++
+store 38
+load 38
 int 65536
 <
 assert
-load 36
+load 37
 itob
 extract 6 0
 concat
 load 29
+store 40
+load 39
+load 40
+concat
 store 39
 load 38
-load 39
-concat
-store 38
-load 37
-store 36
-load 36
-load 39
-len
-+
 store 37
 load 37
+load 40
+len
++
+store 38
+load 38
 int 65536
 <
 assert
-load 36
+load 37
 itob
 extract 6 0
 concat
-load 31
+load 30
+store 40
+load 39
+load 40
+concat
 store 39
 load 38
-load 39
-concat
-store 38
+store 37
 load 37
-store 36
-load 36
+load 40
+len
++
+store 38
+load 38
+int 65536
+<
+assert
+load 37
 itob
 extract 6 0
 concat
 load 32
+store 40
+load 39
+load 40
+concat
+store 39
+load 38
+store 37
+load 37
+itob
+extract 6 0
 concat
 load 33
 concat
@@ -683,44 +693,47 @@ load 34
 concat
 load 35
 concat
-load 38
+load 36
+concat
+load 39
 concat
 retsub
 
 // asset_transfer
 assettransfer_4:
+store 78
+store 77
+store 76
+store 75
 store 74
-store 73
-store 72
-store 71
 byte "smart_asa_id"
 app_global_get
-load 71
+load 74
 txnas Assets
 byte "smart_asa_id"
 app_global_get
 ==
 &&
-load 73
+load 76
 txnas Accounts
 len
 int 32
 ==
 &&
-load 74
+load 77
 txnas Accounts
 len
 int 32
 ==
 &&
-load 72
+load 75
 byte "royalty_amount"
 app_global_get
 >
 &&
 assert
 txn Sender
-load 73
+load 76
 txnas Accounts
 ==
 txn Sender
@@ -734,23 +747,23 @@ txn Sender
 byte "reserve_addr"
 app_global_get
 ==
-load 73
+load 76
 txnas Accounts
 global CurrentApplicationAddress
 ==
 &&
 bnz assettransfer_4_l5
 txn Sender
-load 73
+load 76
 txnas Accounts
 ==
-load 73
+load 76
 txnas Accounts
 byte "reserve_addr"
 app_global_get
 ==
 &&
-load 74
+load 77
 txnas Accounts
 global CurrentApplicationAddress
 ==
@@ -762,14 +775,14 @@ app_global_get
 ==
 byte "smart_asa_id"
 app_global_get
-load 73
+load 76
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 byte "smart_asa_id"
 app_global_get
-load 74
+load 77
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
@@ -782,7 +795,7 @@ assettransfer_4_l4:
 byte "frozen"
 app_global_get
 !
-load 73
+load 76
 txnas Accounts
 byte "frozen"
 app_local_get
@@ -790,7 +803,7 @@ app_local_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 73
+load 76
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
@@ -802,7 +815,7 @@ assettransfer_4_l5:
 byte "frozen"
 app_global_get
 !
-load 74
+load 77
 txnas Accounts
 byte "frozen"
 app_local_get
@@ -810,16 +823,16 @@ app_local_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 74
+load 77
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 &&
-load 71
+load 74
 txnas Assets
 callsub calculatecirculatingsupply_0
-load 72
+load 75
 +
 byte "total"
 app_global_get
@@ -828,12 +841,12 @@ app_global_get
 assert
 b assettransfer_4_l7
 assettransfer_4_l6:
-load 73
+load 76
 txnas Accounts
 byte "frozen"
 app_local_get
 !
-load 74
+load 77
 txnas Accounts
 byte "frozen"
 app_local_get
@@ -845,14 +858,14 @@ app_global_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 73
+load 76
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 byte "smart_asa_id"
 app_global_get
-load 74
+load 77
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
@@ -867,15 +880,15 @@ itxn_field TypeEnum
 byte "smart_asa_id"
 app_global_get
 itxn_field XferAsset
-load 72
+load 75
 byte "royalty_amount"
 app_global_get
 -
 itxn_field AssetAmount
-load 73
+load 76
 txnas Accounts
 itxn_field AssetSender
-load 74
+load 77
 txnas Accounts
 itxn_field AssetReceiver
 int 0
@@ -889,11 +902,11 @@ itxn_field XferAsset
 byte "royalty_amount"
 app_global_get
 itxn_field AssetAmount
-load 73
+load 76
 txnas Accounts
 itxn_field AssetSender
-byte "creator"
-app_global_get
+load 78
+txnas Accounts
 itxn_field AssetReceiver
 int 0
 itxn_field Fee
@@ -902,51 +915,51 @@ retsub
 
 // asset_optin
 assetoptin_5:
-store 79
-store 78
+store 83
+store 82
 txn Sender
-load 78
+load 82
 txnas Assets
 asset_holding_get AssetBalance
-store 81
-store 80
+store 85
+store 84
 byte "smart_asa_id"
 app_global_get
-load 78
+load 82
 txnas Assets
 byte "smart_asa_id"
 app_global_get
 ==
 &&
-load 81
+load 85
 &&
-load 79
+load 83
 gtxns TypeEnum
 int axfer
 ==
 &&
-load 79
+load 83
 gtxns AssetAmount
 int 0
 ==
 &&
-load 79
+load 83
 gtxns XferAsset
 byte "smart_asa_id"
 app_global_get
 ==
 &&
-load 79
+load 83
 gtxns Sender
 txn Sender
 ==
 &&
-load 79
+load 83
 gtxns AssetReceiver
 txn Sender
 ==
 &&
-load 79
+load 83
 gtxns AssetCloseTo
 global ZeroAddress
 ==
@@ -961,7 +974,7 @@ txn Sender
 byte "frozen"
 int 0
 app_local_put
-load 80
+load 84
 int 0
 >
 byte "default_frozen"
@@ -978,12 +991,12 @@ return
 
 // asset_delegate
 assetdelegate_6:
-store 84
-store 83
-store 82
+store 88
+store 87
+store 86
 byte "smart_asa_id"
 app_global_get
-load 84
+load 88
 txnas Accounts
 txn Sender
 !=
@@ -994,7 +1007,7 @@ app_global_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 82
+load 86
 txnas Assets
 ==
 &&
@@ -1012,13 +1025,13 @@ app_local_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 84
+load 88
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 &&
-load 84
+load 88
 txnas Accounts
 byte "frozen"
 app_local_get
@@ -1026,33 +1039,33 @@ app_local_get
 &&
 assert
 txn Sender
-load 82
+load 86
 txnas Assets
 asset_holding_get AssetBalance
-store 86
-store 85
-load 86
-load 83
-load 85
+store 90
+store 89
+load 90
+load 87
+load 89
 <=
 &&
 assert
 txn Sender
-load 84
+load 88
 txnas Accounts
-load 83
+load 87
 app_local_put
 int 1
 return
 
 // get_delegate_allowance
 getdelegateallowance_7:
+store 57
+store 56
 store 55
-store 54
-store 53
 byte "smart_asa_id"
 app_global_get
-load 53
+load 55
 txnas Assets
 byte "smart_asa_id"
 app_global_get
@@ -1060,7 +1073,7 @@ app_global_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 54
+load 56
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
@@ -1068,33 +1081,34 @@ app_local_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 55
+load 57
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 &&
 assert
-load 54
+load 56
 txnas Accounts
-load 55
+load 57
 txnas Accounts
 app_local_get
 retsub
 
 // delegate_asset_transfer
 delegateassettransfer_8:
-store 90
-store 89
-store 88
-store 87
+store 95
+store 94
+store 93
+store 92
+store 91
 byte "smart_asa_id"
 app_global_get
 byte "default_frozen"
 app_global_get
 !
 &&
-load 87
+load 91
 txnas Assets
 byte "smart_asa_id"
 app_global_get
@@ -1102,13 +1116,13 @@ app_global_get
 &&
 byte "smart_asa_id"
 app_global_get
-load 89
+load 93
 txnas Accounts
 byte "smart_asa_id"
 app_local_get
 ==
 &&
-load 89
+load 93
 txnas Accounts
 byte "frozen"
 app_local_get
@@ -1123,34 +1137,44 @@ byte "frozen"
 app_local_get
 !
 &&
-load 88
-load 89
+load 92
+load 93
 txnas Accounts
 txn Sender
 app_local_get
 <=
 &&
-load 88
+load 92
 byte "royalty_amount"
 app_global_get
 >
 &&
 assert
+load 93
+txnas Accounts
+txn Sender
+load 93
+txnas Accounts
+txn Sender
+app_local_get
+load 92
+-
+app_local_put
 itxn_begin
 int axfer
 itxn_field TypeEnum
 byte "smart_asa_id"
 app_global_get
 itxn_field XferAsset
-load 88
+load 92
 byte "royalty_amount"
 app_global_get
 -
 itxn_field AssetAmount
-load 89
+load 93
 txnas Accounts
 itxn_field AssetSender
-load 90
+load 94
 txnas Accounts
 itxn_field AssetReceiver
 int 0
@@ -1164,24 +1188,13 @@ itxn_field XferAsset
 byte "royalty_amount"
 app_global_get
 itxn_field AssetAmount
-load 89
+load 93
 txnas Accounts
 itxn_field AssetSender
-byte "creator"
-app_global_get
+load 95
+txnas Accounts
 itxn_field AssetReceiver
 int 0
 itxn_field Fee
 itxn_submit
-load 89
-txnas Accounts
-txn Sender
-load 89
-txnas Accounts
-txn Sender
-app_local_get
-load 88
--
-app_local_put
-int 1
-return
+retsub

@@ -42,6 +42,7 @@ import {
     user.addr,
   ]);
   if (returnValue) {
+    console.log(returnValue);
     const params = await algodClient.getTransactionParams().do();
     const enc = new TextEncoder();
     const note = enc.encode("OptIn");
