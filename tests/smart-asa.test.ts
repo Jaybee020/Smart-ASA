@@ -167,4 +167,45 @@ describe("Smart-ASA", () => {
       );
     }
   });
+
+  test("it should throw error when delegate tries to overspend", async () => {
+    const addr1 = generateAccount();
+    const addr2 = generateAccount();
+    const addr3 = generateAccount();
+    await sendAlgo(user, addr1.addr, 20000000);
+    await sendAlgo(user, addr2.addr, 20000000);
+    await sendAlgo(user, addr3.addr, 20000000);
+    await optInToAssetandContract(addr1);
+    await optInToAssetandContract(addr2);
+    await optInToAssetandContract(addr3);
+    const amount = 30;
+    const creatorAddr: string = await getAppCreator(appId);
+    //credit the first user with asset
+    await call(user, appId, "asset_transfer", [
+      assetId,
+      amount,
+      appAddr,
+      addr1.addr,
+      creatorAddr,
+    ]);
+
+    //delegate second user
+    await call(addr1, appId, "asset_delegate", [
+      assetId,
+      amount / 2,
+      addr2.addr,
+    ]);
+
+    const delegatetransferAmount = 10;
+    const t = async () => {
+      await call(addr2, appId, "delegate_asset_transfer", [
+        assetId,
+        delegatetransferAmount,
+        addr1.addr,
+        addr3.addr,
+        creatorAddr,
+      ]);
+    };
+    expect(t).toThrow();
+  });
 });

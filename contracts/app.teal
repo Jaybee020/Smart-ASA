@@ -731,6 +731,11 @@ byte "royalty_amount"
 app_global_get
 >
 &&
+load 78
+txnas Accounts
+global CreatorAddress
+==
+&&
 assert
 txn Sender
 load 76
@@ -1148,6 +1153,11 @@ load 92
 byte "royalty_amount"
 app_global_get
 >
+&&
+load 95
+txnas Accounts
+global CreatorAddress
+==
 &&
 assert
 load 93

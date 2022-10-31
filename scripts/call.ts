@@ -47,12 +47,11 @@ export async function call(
   OnComplete?: OnApplicationComplete
 ) {
   const params = await algodClient.getTransactionParams().do();
-  const newParams = { ...params, fee: 20000 };
 
   const commonParams = {
     appID: appId,
     sender: user.addr,
-    suggestedParams: newParams,
+    suggestedParams: params,
     signer: makeBasicAccountTransactionSigner(user),
   };
 

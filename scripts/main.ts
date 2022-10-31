@@ -5,7 +5,7 @@ import algosdk, {
   OnApplicationComplete,
 } from "algosdk";
 import { call } from "./call";
-import { appAddr, appId, assetId, user } from "./config";
+import { appAddr, appId, assetId, getAppCreator, user } from "./config";
 import sha512 from "crypto-js/sha512";
 import sha3 from "crypto-js/sha3";
 import { Hash } from "node:crypto";
@@ -58,7 +58,6 @@ import {
       txn: optInTxn2,
       signer: makeBasicAccountTransactionSigner(user),
     };
-
     await call(
       user,
       appId,
