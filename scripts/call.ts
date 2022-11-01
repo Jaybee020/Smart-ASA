@@ -47,6 +47,8 @@ export async function call(
   OnComplete?: OnApplicationComplete
 ) {
   const params = await algodClient.getTransactionParams().do();
+  params.fee = 10000;
+  params.flatFee;
 
   const commonParams = {
     appID: appId,

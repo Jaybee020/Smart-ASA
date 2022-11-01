@@ -706,8 +706,13 @@ store 77
 store 76
 store 75
 store 74
+load 78
+txnas Accounts
+global CreatorAddress
+==
 byte "smart_asa_id"
 app_global_get
+&&
 load 74
 txnas Assets
 byte "smart_asa_id"
@@ -730,11 +735,6 @@ load 75
 byte "royalty_amount"
 app_global_get
 >
-&&
-load 78
-txnas Accounts
-global CreatorAddress
-==
 &&
 assert
 txn Sender
@@ -1107,8 +1107,13 @@ store 94
 store 93
 store 92
 store 91
+load 95
+txnas Accounts
+global CreatorAddress
+==
 byte "smart_asa_id"
 app_global_get
+&&
 byte "default_frozen"
 app_global_get
 !
@@ -1153,11 +1158,6 @@ load 92
 byte "royalty_amount"
 app_global_get
 >
-&&
-load 95
-txnas Accounts
-global CreatorAddress
-==
 &&
 assert
 load 93

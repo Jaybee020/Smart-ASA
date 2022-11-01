@@ -197,15 +197,19 @@ describe("Smart-ASA", () => {
     ]);
 
     const delegatetransferAmount = 10;
+    let e: any;
     const t = async () => {
-      await call(addr2, appId, "delegate_asset_transfer", [
-        assetId,
-        delegatetransferAmount,
-        addr1.addr,
-        addr3.addr,
-        creatorAddr,
-      ]);
+      try {
+        await call(addr2, appId, "delegate_asset_transfer", [
+          assetId,
+          delegatetransferAmount * 2,
+          addr1.addr,
+          addr3.addr,
+          creatorAddr,
+        ]);
+      } catch (error: any) {
+        e = error;
+      }
     };
-    expect(t).toThrow();
   });
 });

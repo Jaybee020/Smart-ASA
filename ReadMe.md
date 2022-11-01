@@ -4,6 +4,10 @@ An algorand-smart-asset manager contract that adds royalties and delegate accoun
 
 The contract sends a royalty fee of 1 token for any transfer of the asset between holders.It also adds the function of delegating fellow holders to spend certain amounts of your assets for you.
 
+The article explaining the contract can be found [here](https://dev.to/jaybee020/smart-asa-1g7o) while the video on running the steps can be found [here](https://youtu.be/5jf6CZ6znpg).
+
+**NOTE** The contracts gets too large to be deployed. This can be done by commenting out some abi method handlers
+
 # Install Dependencies
 
 You need to have sandbox installed. You can do this by cloning the repo here.
@@ -56,6 +60,12 @@ The test folder contains the test for the smart asa contract and its interaction
 ```
 
 To run contracts test,run the following command
+
+Run the main.ts file that creates the ASA
+
+```
+  npx ts-node scripts/main.ts
+```
 
 ```
   npm run test

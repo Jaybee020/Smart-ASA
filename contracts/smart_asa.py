@@ -191,12 +191,12 @@ def asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, asset_sender
     return Seq(
         Assert(
             And(
+                royalty_receiver.address() == Global.creator_address(),
                 smart_asa_id,
                 is_smartASA_id,
                 Len(asset_sender.address()) == Int(32),
                 Len(asset_receiver.address()) == Int(32),
-                asset_amount.get() > current_royalty_amount,
-                royalty_receiver.address() == Global.creator_address()
+                asset_amount.get() > current_royalty_amount
             )
         ),
         # if it is a normal transaction and not clawback addr
@@ -521,6 +521,7 @@ def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, ass
     return Seq(
         Assert(
             And(
+                royalty_receiver.address() == Global.creator_address(),
                 smart_asa_id,
                 Not(asset_frozen),
                 is_smartASA_id,
@@ -529,8 +530,7 @@ def delegate_asset_transfer(xfer_asset: abi.Asset, asset_amount: abi.Uint64, ass
                 spender_optedIn,
                 Not(spender_frozen),
                 asset_amount.get() <= spender_allowance,
-                asset_amount.get() > current_royalty_amount,
-                royalty_receiver.address() == Global.creator_address()
+                asset_amount.get() > current_royalty_amount
             )
         ),
         App.localPut(asset_owner.address(), Txn.sender(),
